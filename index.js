@@ -51,10 +51,10 @@ $(document).ready(()=>{
             console.log(cacheBlock)
 
             
-            let cbRec
+            let cbRec =""
             for(i = 0; i < cmSize; i++){
                 $('#cacheBlock').append("<div>"+"Block "+i+": "+cacheBlock[i.toString()]+"</div>")
-                cbRec+=i+": "+cacheBlock[i.toString()]
+                cbRec+='\n'+"Block : Data"+'\n'+i+": "+cacheBlock[i.toString()]+'\n'
             }
            
 
@@ -165,7 +165,7 @@ $(document).ready(()=>{
                 let cbRec = ""    
                 for(i = 0; i < cmSize; i++){
                     $('#cacheBlock').append("<div>"+"Block "+i+": "+cacheBlock[i.toString()]+"</div>")
-                    cbRec+=i+": "+cacheBlock[i.toString()]
+                    cbRec+='\n'+"Block : Data"+'\n'+i+": "+cacheBlock[i.toString()]+'\n'
                 }
                 $("#btn-dl").click(function () {
                     results = "OUTPUTS:\n" + "Cache Hit: " + hit + '\n' + "Cache Miss: " + miss 
@@ -238,7 +238,7 @@ $(document).ready(()=>{
 			errorDiv.attr('style', 'color:red;');
 			errFree = false;
 
-		 } else if(isNaN(mmSize) || mmSize <= 0) {
+		 } else if(isNaN(mmSize) || mmSize <= 0 && progMode!='block') {
 			errorDiv.text('Main Memory Size should be a positive number');
 			errorDiv.attr('style', 'color:red;');
 			errFree = false;
