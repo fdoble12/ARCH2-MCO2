@@ -4,7 +4,7 @@
 ### Group Members
  - Donnielle Andres
  - Alfonso Miguel Cruz
- -Francis Doble
+ - Francis Doble
 
 
 Commands:
