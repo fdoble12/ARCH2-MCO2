@@ -51,10 +51,10 @@ $(document).ready(()=>{
             console.log(cacheBlock)
 
             
-            let cbRec =""
+            let cbRec ="\nBlock : Data \n"
             for(i = 0; i < cmSize; i++){
                 $('#cacheBlock').append("<div>"+"Block "+i+": "+cacheBlock[i.toString()]+"</div>")
-                cbRec+='\n'+"Block : Data"+'\n'+i+": "+cacheBlock[i.toString()]+'\n'
+                cbRec+=i+": \t"+cacheBlock[i.toString()]+'\n'
             }
            
 
@@ -162,11 +162,11 @@ $(document).ready(()=>{
     
                 console.log("total Acc: "+ totalAccessTime)
                     totAT.text("Total Memory Access Time:  "+ totalAccessTime)
-                let cbRec = ""    
-                for(i = 0; i < cmSize; i++){
+                    let cbRec ="\nBlock : Data \n"
+                    for(i = 0; i < cmSize; i++){
                     $('#cacheBlock').append("<div>"+"Block "+i+": "+cacheBlock[i.toString()]+"</div>")
-                    cbRec+='\n'+"Block : Data"+'\n'+i+": "+cacheBlock[i.toString()]+'\n'
-                }
+                    cbRec+=i+": \t"+cacheBlock[i.toString()]+'\n'
+                }   
                 $("#btn-dl").click(function () {
                     results = "OUTPUTS:\n" + "Cache Hit: " + hit + '\n' + "Cache Miss: " + miss 
                     + '\n' + "Miss Penalty: " + missPenalty + "ns" + '\n' + "Average Memory Access Time: " + aveAccTime 
@@ -276,7 +276,7 @@ $(document).ready(()=>{
         cbSize= parseInt($('#BlockSize').val());
 
         mmSize= parseInt($('#MM-Size').val());
-        mmMode = $('#MM-Mode').val();
+        mmMode = $('#Mem-Mode').val();
 
         progSeq = $('#ProgSeq').val().split(',');
         progMode = $('#ProgMode').val();
@@ -318,7 +318,7 @@ $(document).ready(()=>{
 					directMapping();
 				}
 			}
-            directMapping();
+            //directMapping();
     });
 
     
