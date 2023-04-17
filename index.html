@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<link rel="stylesheet" href="styles.css"/>
+
+		<script src="https://code.jquery.com/jquery-3.6.1.js"></script>
+		<script type="text/javascript" src="index.js"></script>
+
+		<title>Direct Mapping Cache Simulator</title>
+	</head>
+
+	<body>
+		<div id="header">
+			<h1> Direct Mapping Cache Simulator </h1>
+			<h3> PG2 </h3>
+			<p> This Direct Mapping Cache Simulator Program simulates how data is 
+				stored and retrieved in a computer's cache memory using the direct 
+				mapping technique.</p>
+		</div>
+
+
+		<div id="display-block">
+			
+			<!-- Left -->
+			<div id="input-block">
+				<div class="error"></div>
+				
+				<div id="input-cont">
+					<br>
+					<!-- CACHE MEMORY -->
+					<span>
+						<p>Cache Memory Size</p>
+						<input id="CacheMemory" type="text"/>
+						<select id="Cache-Mode">
+							<option value="block" selected>Block</option>
+							<option value="word" >Word</option>
+						</select>
+					</span>
+
+					<br>
+					<!-- SIZES -->
+					<span>
+						<p>Block Size</p>
+						<input id="BlockSize" type="text" placeholder="Input Block Size (Words)"/>
+					</span>
+					<br>
+					
+					<span>
+						<p>Main Memory Size</p>
+						<input id="MM-Size" type="text"/>
+						<select id="Mem-Mode">
+							<option value="block" selected>Block</option>
+							<option value="word" >Word</option>
+						</select>
+					</span>				
+					<br>
+
+			
+					
+					<!-- SEQUENCE & TIME -->
+					<span>
+						<p>Program Sequence</p>
+						<input id="ProgSeq" type="text"/>
+						<select id="ProgMode">
+							<option value="block" selected>Block</option>
+							<option value="word" >Word</option>
+						</select>
+					</span>
+					<br>
+					<span>
+						<p>Cache Access Time</p>
+						<input id="CacheTime" type="text" placeholder="Nanoseconds"/>
+					</span>
+					<br>
+					<span>
+						<p>Memory Access Time</p>
+						<input id="MemTime" type="text" placeholder="Nanoseconds"/>
+					</span>
+				
+				
+		
+					<div id="buttons">
+						<button id="btn-start" type="button">Start</button>
+						<button id="btn-clear">Clear</button>
+
+					</div>
+
+				</div>	
+			
+			</div>
+
+			<!-- Right 1,7,5,0,2,1,5,6,5,2,2,0-->
+			<div id="output-block">
+				
+					<!-- For the Cache Snapshot-->
+
+					<div id="output-cont"> 
+
+						<div id="result-block">
+								<div id="CacheMiss"> DSFSD</div>
+								<div id="CacheHit">FSDSD </div>
+
+								<div id="Ave-AT"> FSDF</div>
+								<div id="Tot-AT">FSDFD </div>
+
+								
+								<div id="table-disp"> 
+									<table id="table-block">
+										<thead>
+											<tr>
+												<th id="Block-Col"> Block </th>
+												<th id="Data-Col"> Data </th>
+											</tr>
+										</thead>
+										<tbody>
+											<!-- REPEAT HERE -->
+											<tr>
+												<td rowspan="4">0</td>
+												<td>Data 000</td>
+											</tr>
+											<tr>
+												<td>Data 001</td>
+											</tr>
+											<tr>
+												<td>Data 002</td>
+											</tr>
+											<tr>
+												<td>Data 003</td>
+											</tr>
+											<!-- END REPEAT -->
+										</tbody>
+									</table>
+								</div>
+
+
+						</div>
+
+						<div id="buttons">
+							<button id="btn-dl">Download Result</button>
+						</div>
+
+					</div>
+
+			</div>
+		
+	</body>
+</html>
