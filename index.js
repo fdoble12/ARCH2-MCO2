@@ -78,6 +78,9 @@ $(document).ready(()=>{
             var totAT = $("#Tot-AT");        
 
             console.log(mmTime+1)
+
+            var mP = $("#MissPenalty")
+                mP.text(missPenalty)
             console.log("Ave: "+aveAccTime)
                 aveAT.text("Average Memory Access Time:  "+ aveAccTime)
 
@@ -143,7 +146,8 @@ $(document).ready(()=>{
                 let totalAccessTime = (hit * 2 * cmTime) + (miss * 2 *(mmTime+1)) + (miss * cmTime)
                 var aveAT = $("#Ave-AT");
                 var totAT = $("#Tot-AT");        
-    
+                var mP = $("#MissPenalty")
+                mP.text(missPenalty)
                 console.log("Ave: "+aveAccTime)
                     aveAT.text("Average Memory Access Time:  "+ aveAccTime)
     
@@ -185,7 +189,7 @@ $(document).ready(()=>{
 
 		} else if(modeVal == 'word') {
 
-			if(Math.log2(mmSize) % 1 != 0) {
+			if(Math.log(cmSize)/Math.log(2) % 1 === 0) {
 				errorDiv.text('[WORD] Main Memory is not a power of 2.');
 				errorDiv.attr('style', 'color:red;');
 				errFree = false;
