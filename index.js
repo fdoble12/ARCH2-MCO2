@@ -48,27 +48,18 @@ $(document).ready(()=>{
 
             console.log(cacheBlock)
 
-            var table = $("#table-block");
+            
 
-            for (var i = -1; i < cacheBlock.length; i++) {
-                var row = $('<tr>');
-                for (var j = 0; j < cacheBlock[i].length; j++) {
-                    var cell = $('<td>').text(cacheBlock[i][j]);
-                    row.append(cell);
-                }
-                table.append(row);
+            for(i = 0; i < cmSize; i++){
+                $('#cacheBlock').append("<div>"+"Block "+i+": "+cacheBlock[i.toString()]+"</div>")
             }
-
-            $('#table-disp').append(table);
+           
 
             console.log('Miss: '+ miss)
                 cMiss.text("Cache Miss:  " + miss)
 
             console.log('Hit: '+ hit)
                 cHit.text("Cache Hit:  " + hit)
-
-
-
 
             hitRate = hit/seqLength
             missRate = miss/seqLength
@@ -91,6 +82,11 @@ $(document).ready(()=>{
             console.log("total Acc: "+ totalAccessTime)
                 totAT.text("Total Memory Access Time:  "+ totalAccessTime)
 
+            for(i = 0; i < cacheBlock.length; i++)
+            {
+                let block = i.toString()
+                console.log("Cache Block "+cacheBlock[block])
+            }
 
 
         }else{
@@ -143,10 +139,18 @@ $(document).ready(()=>{
                 let aveAccTime = (hitRate * cmTime) + (missRate * missPenalty)
 
                 let totalAccessTime = (hit * 2 * cmTime) + (miss * 2 *(mmTime+1)) + (miss * cmTime)
+                var aveAT = $("#Ave-AT");
+                var totAT = $("#Tot-AT");        
+    
                 console.log("Ave: "+aveAccTime)
+                    aveAT.text("Average Memory Access Time:  "+ aveAccTime)
+    
                 console.log("total Acc: "+ totalAccessTime)
-                console.log(cacheBlock)
-
+                    totAT.text("Total Memory Access Time:  "+ totalAccessTime)
+                    
+                for(i = 0; i < cmSize; i++){
+                    $('#cacheBlock').append("<div>"+"Block "+i+": "+cacheBlock[i.toString()]+"</div>")
+                }
             }
         }
 
