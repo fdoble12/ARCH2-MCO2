@@ -51,9 +51,10 @@ $(document).ready(()=>{
             console.log(cacheBlock)
 
             
-
+            let cbRec
             for(i = 0; i < cmSize; i++){
                 $('#cacheBlock').append("<div>"+"Block "+i+": "+cacheBlock[i.toString()]+"</div>")
+                cbRec+=i+": "+cacheBlock[i.toString()]
             }
            
 
@@ -86,13 +87,21 @@ $(document).ready(()=>{
 
             console.log("total Acc: "+ totalAccessTime)
                 totAT.text("Total Memory Access Time:  "+ totalAccessTime)
-
-            for(i = 0; i < cacheBlock.length; i++)
-            {
-                let block = i.toString()
-                console.log("Cache Block "+cacheBlock[block])
-            }
-
+            
+            
+            $("#btn-dl").click(function () {
+                results = "OUTPUTS:\n" + "Cache Hit: " + hit + '\n' + "Cache Miss: " + miss 
+                + '\n' + "Miss Penalty: " + missPenalty + "ns" + '\n' + "Average Memory Access Time: " + aveAccTime 
+                + "ns" + '\n' + "Total Memory Access Time: " + totalAccessTime + "ns" + '\n' + "Cache Memory: " + cbRec;
+                          
+                const blob = new Blob([results], {type:"text/plain"});
+                const href = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.download = "results.txt";
+                link.href = href;
+                link.click();
+                URL.revokeObjectURL(href);
+            });
 
         }else{
             if(cmMode == 'block' && mmMode == 'word'){
@@ -153,10 +162,25 @@ $(document).ready(()=>{
     
                 console.log("total Acc: "+ totalAccessTime)
                     totAT.text("Total Memory Access Time:  "+ totalAccessTime)
-                    
+                let cbRec = ""    
                 for(i = 0; i < cmSize; i++){
                     $('#cacheBlock').append("<div>"+"Block "+i+": "+cacheBlock[i.toString()]+"</div>")
+                    cbRec+=i+": "+cacheBlock[i.toString()]
                 }
+                $("#btn-dl").click(function () {
+                    results = "OUTPUTS:\n" + "Cache Hit: " + hit + '\n' + "Cache Miss: " + miss 
+                    + '\n' + "Miss Penalty: " + missPenalty + "ns" + '\n' + "Average Memory Access Time: " + aveAccTime 
+                    + "ns" + '\n' + "Total Memory Access Time: " + totalAccessTime + "ns" + '\n' + "Cache Memory: " + cbRec;
+                              
+                    const blob = new Blob([results], {type:"text/plain"});
+                    const href = URL.createObjectURL(blob);
+                    const link = document.createElement("a");
+                    link.download = "results.txt";
+                    link.href = href;
+                    link.click();
+                    URL.revokeObjectURL(href);
+                });
+    
             }
         }
 
