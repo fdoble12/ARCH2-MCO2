@@ -1,4 +1,4 @@
-# Direct Mapping Cache Simulator
+# Direct Cache Simulator
 ## PG2-S11
 
 ### Group Members
