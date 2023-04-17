@@ -2,9 +2,9 @@
 ## PG2-S11
 
 ### Group Members
-Donnielle Andres
-Alfonso Miguel Cruz
-Francis Doble
+ - Donnielle Andres
+ - Alfonso Miguel Cruz
+ -Francis Doble
 
 
 Commands:
