@@ -80,7 +80,7 @@ $(document).ready(()=>{
             console.log(mmTime+1)
 
             var mP = $("#MissPenalty")
-                mP.text(missPenalty)
+                mP.text("Miss penalty: "+missPenalty)
             console.log("Ave: "+aveAccTime)
                 aveAT.text("Average Memory Access Time:  "+ aveAccTime)
 
@@ -147,7 +147,7 @@ $(document).ready(()=>{
                 var aveAT = $("#Ave-AT");
                 var totAT = $("#Tot-AT");        
                 var mP = $("#MissPenalty")
-                mP.text(missPenalty)
+                mP.text("Miss penalty: "+ missPenalty)
                 console.log("Ave: "+aveAccTime)
                     aveAT.text("Average Memory Access Time:  "+ aveAccTime)
     
