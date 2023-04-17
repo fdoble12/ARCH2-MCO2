@@ -7,9 +7,11 @@ $(document).ready(()=>{
     var mmSize
 
     var progSeq
+    var progMode
     var mmTime
     var cmTime
-      
+    var mmMode
+
 
     var mmTime
     var cmTime
