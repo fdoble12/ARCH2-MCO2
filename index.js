@@ -183,12 +183,7 @@ $(document).ready(()=>{
 
 		} else if(modeVal == 'word') {
 
-			if(Math.pow(2, cbSize) != cmSize) {
-				errorDiv.text('[WORD] Block Size and Cache Memory Size are incompatible');
-				errorDiv.attr('style', 'color:red;');
-				errFree = false;
-                
-			} else if(Math.log2(mmSize) % 1 !== 0) {
+			if(Math.log2(mmSize) % 1 !== 0) {
 				errorDiv.text('[WORD] Main Memory is not a power of 2.');
 				errorDiv.attr('style', 'color:red;');
 				errFree = false;
@@ -275,7 +270,7 @@ $(document).ready(()=>{
                 errorDiv.text('Please enter Block Size');
 				errorDiv.attr('style', 'color:red;');
 
-            } else if (isNaN(mmSize)) {
+            } else if (isNaN(mmSize) && progMode != 'block') {
                 errorDiv.text('Please enter Main Memory Size');
 				errorDiv.attr('style', 'color:red;');
 
