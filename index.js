@@ -185,7 +185,7 @@ $(document).ready(()=>{
 
 		} else if(modeVal == 'word') {
 
-			if(Math.log2(mmSize) % 1 !== 0) {
+			if(Math.log2(mmSize) % 1 != 0) {
 				errorDiv.text('[WORD] Main Memory is not a power of 2.');
 				errorDiv.attr('style', 'color:red;');
 				errFree = false;
