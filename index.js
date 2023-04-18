@@ -107,6 +107,9 @@ $(document).ready(() => {
 	}
 	
 	function displayResults() {
+		var results = $('#results-display');
+		results.empty();
+
 		var ch = $('<div>');
 		var cm = $('<div>');
 		var mp = $('<div>'); //Miss Penalty
@@ -370,7 +373,45 @@ $(document).ready(() => {
 	$('#btn-clear').click(() => {
 		clearInputs();
 	});
+
+	/*$("#btn-dl").click(() => {
+		results = "OUTPUTS:\n" + "Cache Hit: " + hit + '\n' + "Cache Miss: " + miss 
+		+ '\n' + "Miss Penalty: " + missPenalty + "ns" + '\n' + "Average Memory Access Time: " + aveAccTime 
+		+ "ns" + '\n' + "Total Memory Access Time: " + totalAccessTime + "ns" + '\n' + "Cache Memory: " + cbRec;
+				  
+		const blob = new Blob([results], {type:"text/plain"});
+		const href = URL.createObjectURL(blob);
+		const link = document.createElement("a");
+		link.download = "Results.txt";
+		link.href = href;
+		link.click();
+		URL.revokeObjectURL(href);
+	});*/
+
+	var blockTbForTxt = "Block : Data"
+
+	for(j = 0; j < cacheBlock; j++)
+			{
+				let txtToAppend = "\n"+ j + " : "+blockTable[j][0]	
+				blockTbForTxt = blockTbForTxt + txtToAppend
+			}
+
+	$("#btn-dl").click(function () {
+		results = "OUTPUTS:\n" + "Cache Hit: " + HIT + '\n' + "Cache Miss: " + MISS 
+		+ '\n' + "Miss Penalty: " + MISS_PENALTY + "ns" + '\n' + "Average Memory Access Time: " + AMAT 
+		+ "ns" + '\n' + "Total Memory Access Time: " + TMAT + "ns" + '\n' + "Cache Memory: " + blockTbForTxt;
+				
+		const blob = new Blob([results], {type:"text/plain"});
+		const href = URL.createObjectURL(blob);
+		const link = document.createElement("a");
+		link.download = "results.txt";
+		link.href = href;
+		link.click();
+		URL.revokeObjectURL(href);
+	});
+	  
 	
 	$('#MMVals').text('');
 
+	
 });
