@@ -20,6 +20,8 @@ $(document).ready(() => {
 	var AMAT;
 	var TMAT;
 	
+	var blockTbForTxt = "\nBlock : Data"
+
 	function drawBlockTable(blkTable) {
 		var table = $('<table>');
 		var tr_h = $('<tr>');
@@ -153,7 +155,12 @@ $(document).ready(() => {
 				MISS++;
 			}
 		}
-		
+
+		for(j = 0; j < cacheBlock; j++)
+				{
+					let txtToAppend = "\n"+ j + " : "+blockTable[j][0]	
+					blockTbForTxt = blockTbForTxt + txtToAppend
+				}
 		drawBlockTable(blockTable);
 		displayResults();
 	}
@@ -238,9 +245,14 @@ $(document).ready(() => {
 				wordIndex[blk_res] += 1;
 			}
 		}
-		
-		drawWordTable(wordTable);
-		displayResults();
+
+		for(j = 0; j < cacheBlock; j++)
+				{
+					let txtToAppend = "\n"+ j + " : "+blockTable[j][0]	
+					blockTbForTxt = blockTbForTxt + txtToAppend
+				}
+			drawWordTable(wordTable);
+			displayResults();
 	}
 	
 	function checkCompatibility(cmSize, mmSize, cbSize, mmvArr) {
@@ -388,13 +400,6 @@ $(document).ready(() => {
 		URL.revokeObjectURL(href);
 	});*/
 
-	var blockTbForTxt = "Block : Data"
-
-	for(j = 0; j < cacheBlock; j++)
-			{
-				let txtToAppend = "\n"+ j + " : "+blockTable[j][0]	
-				blockTbForTxt = blockTbForTxt + txtToAppend
-			}
 
 	$("#btn-dl").click(function () {
 		results = "OUTPUTS:\n" + "Cache Hit: " + HIT + '\n' + "Cache Miss: " + MISS 
