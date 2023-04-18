@@ -310,18 +310,6 @@ $(document).ready(() => {
 		 }
 	}
 	
-	function clearInputs() {
-		$('#CacheMemory').val('');
-		$('#MainMemory').val('');
-		$('#CacheBlock').val('');
-		$('#MMVals').val('');
-		
-		HIT = 0;
-		MISS = 0;
-		MISS_PENALTY = 0;
-		AMAT = 0;
-		TMAT = 0;
-	}
 	
     // Get inputs
     $('#btn-start').on('click', function() {
@@ -350,7 +338,7 @@ $(document).ready(() => {
 				 $(".error").text('');
 				 console.log("no empty space");
 				if(isValidValues(cacheMemory, mainMemory, cacheBlock, mmVals)) {
-					clearInputs();
+					// clearInputs();
 					$('#table-display').empty();
 					if(progMode === "block")
 						blockDM();
@@ -359,6 +347,25 @@ $(document).ready(() => {
 				}
 			}
     });
+
+	function clearInputs() {
+		$('#CacheMemory').val('');
+		$('#MainMemory').val('');
+		$('#CacheBlock').val('');
+		$('#MMVals').val('');
+		var table  = $('#table-display');
+		var results = $('#results-display');
+
+		results.empty();
+  		table.empty();
+		
+		
+		HIT = 0;
+		MISS = 0;
+		MISS_PENALTY = 0;
+		AMAT = 0;
+		TMAT = 0;
+	}
 	
 	$('#btn-clear').click(() => {
 		clearInputs();

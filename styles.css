@@ -131,6 +131,15 @@ textarea {
 	color: white;
 }
 
+#btn-dl{
+    padding: 5px 32px;
+    text-align: center;
+    align-content: center;
+    margin-right: 20px;
+    margin-left: 180px;
+     
+}
+
 table, tr, td, th {
 	border: 1px solid black;
 	border-spacing: 0px;
