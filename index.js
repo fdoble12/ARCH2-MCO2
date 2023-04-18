@@ -1,360 +1,369 @@
-$(document).ready(()=>{
-    var cmSize
-    var cmMode
-   
-    var cbSize //This is in words
+$(document).ready(() => {
+    const MEM_ACCESS = 10;
+	const CAC_ACCESS = 1;
+	var   MISS_PENALTY;
+	
+	var cacheMemory;
+	var mainMemory;
+	var cacheBlock;
+	var mainMemValues;
+	
+	var tagLength;
+	var blkLength;
+	var wrdLength;
+	
+	var HIT  = 0;
+	var MISS = 0;
+	
+	var HIT_RATE;
+	var MISS_RATE;
+	var AMAT;
+	var TMAT;
+	
+	function drawBlockTable(blkTable) {
+		var table = $('<table>');
+		var tr_h = $('<tr>');
+		var th_blk = $('<th>');
+		var th_dat = $('<th>');
+		
+		th_blk.text("Block");
+		th_dat.text("Data");
+		
+		tr_h.append(th_blk);
+		tr_h.append(th_dat);
+		table.append(tr_h);
+		
+		for(var i = 0; i < blkTable.length; i++) {
+			var tr = $('<tr>');
+			var td_blk = $('<td>');
+			var td_dat = $('<td>');
+			var data = "";
+			
+			for(var j = 0; j < blkTable[i].length; j++) {
+				data += blkTable[i][j].toString();
+				if(j + 1 != blkTable[i].length)
+					data += ", ";
+			}
+			console.log(data);
+			td_blk.append(i);
+			td_dat.append(data);
+			tr.append(td_blk);
+			tr.append(td_dat);
+			table.append(tr);
+		}
+		$('#table-display').append(table);
+	}
+	
+	function drawWordTable(wrdTable) {
+		var table = $('<table>');
+		var tr_h = $('<tr>');
+		var th_blk = $('<th>');
+		var th_dat = $('<th>');
+		
+		th_blk.text("Block");
+		th_dat.text("Data");
+		
+		tr_h.append(th_blk);
+		tr_h.append(th_dat);
+		table.append(tr_h);
+		
+		for(var i = 0; i < wrdTable.length; i++) {
+			var tr = $('<tr>');
+			var td_blk = $('<td>');
+			var td_dat = $('<td>');
+			var data = "";
 
-    var mmSize
+			td_blk.attr('rowspan', Math.log2(cacheMemory));
+			td_blk.append(i);
+			tr.append(td_blk);
+			
+			for(var j = 0; j < Math.log2(cacheMemory); j++) {
+				if(j == 0) {
+					if(wrdTable[i].length != 0)
+						td_dat.append(wrdTable[i][j]);
+					else
+						td_dat.append("-");
+						
+					tr.append(td_dat);
+					table.append(tr);
+				} else if(j < wrdTable[i].length) {
+					var tr_dat = $('<tr>');
+					var td_dat_single = $('<td>');
+					
+					td_dat_single.append(wrdTable[i][j].toString());
+					tr_dat.append(td_dat_single);
+					table.append(tr_dat);
+				} else {
+					var tr_dat = $('<tr>');
+					var td_dat_single = $('<td>');
+					
+					td_dat_single.append("-");
+					tr_dat.append(td_dat_single);
+					table.append(tr_dat);
+				}
+			}			
+		}
+		$('#table-display').append(table);
+	}
+	
+	function displayResults() {
+		var ch = $('<div>');
+		var cm = $('<div>');
+		var mp = $('<div>'); //Miss Penalty
+		var amat = $('<div>'); // Average Memory Access Time
+		var tmat = $('<div>'); // Total Memory Access Time
+		
+		HIT_RATE = HIT / mainMemValues.length;
+		MISS_RATE = MISS / mainMemValues.length;
+		MISS_PENALTY = CAC_ACCESS + (MEM_ACCESS * Math.log2(cacheMemory)) + CAC_ACCESS;
+		AMAT = (HIT_RATE * CAC_ACCESS) + (MISS_RATE * MISS_PENALTY);
+		TMAT = (HIT * CAC_ACCESS * 2) + (MISS * MISS_PENALTY) + (MISS * CAC_ACCESS);
+		
+		ch.append("Cache Hit: " + HIT + " / " + mainMemValues.length);
+		cm.append("Cache Miss: " + MISS + " / " + mainMemValues.length);
+		mp.append("Miss Penalty: " + MISS_PENALTY + " nanoseconds");
+		amat.append("Average Memory Access Time: " + AMAT + " nanoseconds");
+		tmat.append("Total Memory Access Time: " + TMAT + " nanoseconds");
+		
+		$('#results-display').append(ch);
+		$('#results-display').append(cm);
+		$('#results-display').append(mp);
+		$('#results-display').append(amat);
+		$('#results-display').append(tmat);
+	}
+	
+	function blockDM() {
+		var blockTable = [];
+		var result;
+		var i, j;
+		
+		for(j = 0; j < cacheBlock; j++)
+			blockTable[j] = [];
+			
+		for(i = 0; i < mainMemValues.length; i++) {
+			result = mainMemValues[i] % cacheBlock;
+			
+			if(blockTable[result].length == 1 && blockTable[result][0] == mainMemValues[i])
+				HIT++;
+			else {
+				blockTable[result][0] = mainMemValues[i];
+				MISS++;
+			}
+		}
+		
+		drawBlockTable(blockTable);
+		displayResults();
+	}
+	
+	function computeAddress() {
+		blkLength = Math.log2(cacheBlock); // 2
+		wrdLength = Math.log2(Math.log2(cacheMemory)); // 2
+		tagLength = Math.log2(mainMemory) - blkLength - wrdLength; //4
+	}
+	
+	function Bin_To_Dec(num) {
+		var nDec = 0;
+		var nTwo = 1;
+		
+		while (num > 0) {
+			
+			if(num % 2 != 0)
+				nDec += nTwo;
+			
+			nTwo *= 2;
+			num = Math.floor(num / 10);
+		}
+		
+		return nDec;
+	}
+	
+	function Dec_To_BinArr(num) {		
+		var bNum = 0;
+		var nTen = 1;
+		
+		while (num > 0) {
+			if(num % 2 != 0)
+				bNum += nTen;
+			nTen *= 10;
+			num = Math.floor(num / 2);
+		}
+		
+		return appendZero(bNum.toString().split(''));
+	}
+	
+	function appendZero(num) {
+		while(num.length < tagLength + blkLength + wrdLength)
+			num.splice(0, 0, '0').join();
+		return num;
+	}
+	
+	function wordDM() {
+		var wordTable = [];
+		var wordIndex = [];
+		var result;
+		var bin_mem;
+		var blk_res;
+		var blk_bit = "";
+		var i, j;
+		
+		for(j = 0; j < cacheBlock; j++) {
+			wordTable[j] = [];
+			wordIndex[j] = 0;
+		}
+		
+		computeAddress();
+		
+		for(i = 0; i < mainMemValues.length; i++) {
+			blk_bit = "";
+			bin_mem = Dec_To_BinArr(mainMemValues[i]);
+			
+			for(j = tagLength; j < tagLength + blkLength; j++)
+				blk_bit += bin_mem[j];
+			
+			blk_res = Bin_To_Dec(parseInt(blk_bit));
 
-    var progSeq
-    var progMode
-    var mmTime
-    var cmTime
-    var mmMode
-
-
-    var mmTime
-    var cmTime
-
-    function directMapping(){ 
-        if(progMode == 'block'){
-            let numBlocks
-            if(cmMode == 'block')
-                numBlocks = cmSize
-            else if(cmMode == 'word')
-                numBlocks = cmSize/256
-
-            let cacheBlock  = {};
-            let miss = 0
-            let hit = 0
-            let seqLength = 0 
-            let missPenalty = 0
-            let hitRate = 0
-            let missRate = 0 
-            
-            for(i = 0; i< numBlocks; i++){
-                cacheBlock[i] = []
-            }
-
-            progSeq.forEach((curr) => {
-                let val = parseInt(curr)
-                let destBlock = val % numBlocks
-
-                if(cacheBlock[destBlock].pop() == val){
-                    hit++
-                }else{
-                    miss++
-                }
-                cacheBlock[destBlock].push(val)
-                seqLength++
-            })
-
-            /** DISPLAY */
-            var cMiss = $("#CacheMiss");
-            var cHit = $("#CacheHit");
-            
-
-            console.log(cacheBlock)
-
-            
-            let cbRec ="\nBlock : Data \n"
-            for(i = 0; i < numBlocks; i++){
-                $('#cacheBlock').append("<div>"+"Block "+i+": "+cacheBlock[i.toString()]+"</div>")
-                cbRec+=i+": \t"+cacheBlock[i.toString()]+'\n'
-            }
-           
-
-            console.log('Miss: '+ miss)
-                cMiss.text("Cache Miss:  " + miss)
-
-            console.log('Hit: '+ hit)
-                cHit.text("Cache Hit:  " + hit)
-
-            hitRate = hit/seqLength
-            missRate = miss/seqLength
-
-            missPenalty = (cmTime*2) + (mmTime * cbSize)
-
-            let aveAccTime = (hitRate * cmTime) + (missRate * missPenalty)
-
-            let missTime = (miss * (cbSize * (mmTime * 1 + cmTime * 1))) + miss * cmTime;
-            console.log("Miss Time: "+missTime)
-            let totalAccessTime = (hit * cmTime * cbSize) + missTime;
-            /** DISPLAY */
-
-            var aveAT = $("#Ave-AT");
-            var totAT = $("#Tot-AT");        
-
-            console.log(mmTime+1)
-
-            var mP = $("#MissPenalty")
-                mP.text("Miss penalty: "+missPenalty)
-            console.log("Ave: "+aveAccTime)
-                aveAT.text("Average Memory Access Time:  "+ aveAccTime)
-
-            console.log("total Acc: "+ totalAccessTime)
-                totAT.text("Total Memory Access Time:  "+ totalAccessTime)
-            
-            
-            $("#btn-dl").click(function () {
-                results = "OUTPUTS:\n" + "Cache Hit: " + hit + '\n' + "Cache Miss: " + miss 
-                + '\n' + "Miss Penalty: " + missPenalty + "ns" + '\n' + "Average Memory Access Time: " + aveAccTime 
-                + "ns" + '\n' + "Total Memory Access Time: " + totalAccessTime + "ns" + '\n' + "Cache Memory: " + cbRec;
-                          
-                const blob = new Blob([results], {type:"text/plain"});
-                const href = URL.createObjectURL(blob);
-                const link = document.createElement("a");
-                link.download = "results.txt";
-                link.href = href;
-                link.click();
-                URL.revokeObjectURL(href);
-            });
-
-        }else{
-            
-                let mmSizeForBits
-                console.log('MMSIZE ' +mmSize)
-                if(mmMode == 'block')
-                    mmSizeForBits = mmSize * 256
-                else{
-                    mmSizeForBits = mmSize
-                }
-                console.log('MMSIZE FOR BITS '+ mmSizeForBits)
-                let numBlocks
-                if(cmMode == 'block')
-                    numBlocks = cmSize
-                else if(cmMode == 'word')
-                    numBlocks = cmSize/256
-
-                let mmBits = getBits(mmSizeForBits) // MM memory to bits
-                console.log('MMbits '+ mmBits)
-                let w= getBits(cbSize) //block size to bits
-                let b = getBits(numBlocks) //cache mem to bits
-                let tag = mmBits - w - b
-                let hit = 0
-                let miss = 0
-                let seqLength = 0
-                let missPenalty = 0
-                let hitRate = 0
-                let missRate = 0
-                let cacheBlock = {};
-                for(i = 0; i< numBlocks; i++){
-                    cacheBlock[i] = []
-                }
-                console.log(progSeq)
-                progSeq.forEach((curr)=>{
-                    
-                    if(curr.length != mmBits)
-                    {
-                        //TODO place error in front end. "Input correct number of bits"
-                        console.log('Wrong num of bits')
-                    }
-                    else{
-                        let decVal = parseInt(curr, 2)
-                        let blockNum = curr.substring(tag, (tag+b))
-                        console.log(blockNum)
-                        let blockNumInt = parseInt(blockNum, 2)
-                        console.log(blockNumInt)
-
-                        let destBlock = blockNumInt % numBlocks
-                        if(cacheBlock[destBlock].pop() == decVal)
-                        {
-                            hit++
-                        }
-                        else{
-                            miss++
-                        }
-                        cacheBlock[destBlock].push(decVal)
-                        seqLength++
-                    }
-                })
-                hitRate = hit/seqLength
-                missRate = miss/seqLength
-                missPenalty = (cmTime*2) + (mmTime * cbSize)
-
-                let aveAccTime = (hitRate * cmTime) + (missRate * missPenalty)
-                let missTime = (miss * (cbSize * (mmTime * 1 + cmTime * 1))) + miss * cmTime;
-                console.log("Miss Time: "+missTime)
-                let totalAccessTime = (hit * cmTime * cbSize) + missTime;
-                var aveAT = $("#Ave-AT");
-                var totAT = $("#Tot-AT");        
-                var mP = $("#MissPenalty")
-                mP.text("Miss penalty: "+ missPenalty)
-                console.log("Ave: "+aveAccTime)
-                    aveAT.text("Average Memory Access Time:  "+ aveAccTime)
-    
-                console.log("total Acc: "+ totalAccessTime)
-                    totAT.text("Total Memory Access Time:  "+ totalAccessTime)
-                    let cbRec ="\nBlock : Data \n"
-                    for(i = 0; i < numBlocks; i++){
-                    $('#cacheBlock').append("<div>"+"Block "+i+": "+cacheBlock[i.toString()]+"</div>")
-                    cbRec+=i+": \t"+cacheBlock[i.toString()]+'\n'
-                }   
-                $("#btn-dl").click(function () {
-                    results = "OUTPUTS:\n" + "Cache Hit: " + hit + '\n' + "Cache Miss: " + miss 
-                    + '\n' + "Miss Penalty: " + missPenalty + "ns" + '\n' + "Average Memory Access Time: " + aveAccTime 
-                    + "ns" + '\n' + "Total Memory Access Time: " + totalAccessTime + "ns" + '\n' + "Cache Memory: " + cbRec;
-                              
-                    const blob = new Blob([results], {type:"text/plain"});
-                    const href = URL.createObjectURL(blob);
-                    const link = document.createElement("a");
-                    link.download = "results.txt";
-                    link.href = href;
-                    link.click();
-                    URL.revokeObjectURL(href);
-                });
-    
-            
-        }
-
-    }
-
-    function getBits(num) {
-        let n = 0;
-        while (num > 1) {
-            if (num % 2 == 0) {
-                num = num / 2;
-                n++;
-            } else {
-                return -1;
-            }
-        }
-        return n;
-    }
-    
-    function checkCompatibility(cmSize, mmSize, cbSize, progMode) {
-		let modeVal = $('#ProgMode').val();
-
+			if(wordTable[blk_res].includes(mainMemValues[i]))
+				HIT++;
+			else MISS++;
+			
+			if(wordTable[blk_res].length < Math.log2(cacheMemory)) {
+				wordTable[blk_res].push(mainMemValues[i]);
+				wordIndex[blk_res] += 1;
+			} else {
+				wordIndex[blk_res] %= cacheBlock;
+				wordTable[blk_res] = mainMemValues[i];
+				wordIndex[blk_res] += 1;
+			}
+		}
+		
+		drawWordTable(wordTable);
+		displayResults();
+	}
+	
+	function checkCompatibility(cmSize, mmSize, cbSize, mmvArr) {
+		const mode = $('#ProgMode').val();
+		
 		var errFree = true;
-        var errorDiv = $(".error");
-
-		if(mmMode == 'block' && mmSize != 0) {
-                mmMode = null;
-                errorDiv.text('Main Memory Size is not required for Block Mode');
-				errorDiv.attr('style', 'color:red;');
-
-		} else if(modeVal == 'word') {
-
-			if(Math.log(cmSize)/Math.log(2) % 1 === 0) {
-				errorDiv.text('[WORD] Main Memory is not a power of 2.');
-				errorDiv.attr('style', 'color:red;');
+		if(mode == 'block') {
+			if(cmSize != cbSize) {
+				$(".error").text('[BLOCK] Cache Memory and Cache Block Sizes are unequal.');
+				$(".error").attr('style', 'color:red;');
 				errFree = false;
 			}
-
+		} else if(mode == 'word') {
+			if(Math.pow(2, cbSize) != cmSize) {
+				$(".error").text('[WORD] Cache Block Size and Cache Memory Size are incompatible');
+				$(".error").attr('style', 'color:red;');
+				errFree = false;
+			} else if(Math.log2(mmSize) % 1 !== 0) {
+				$(".error").text('[WORD] Main Memory is not a power of 2.');
+				$(".error").attr('style', 'color:red;');
+				errFree = false;
+			}
 		}
+		
+		if(errFree)
+			console.log("compatible values");
+			
 		return errFree;
 	}
+	
+	// check if input is a positive number,
+	// before checking compatibility
+	function isValidValues(cmSize, mmSize, cbSize, mmVals) {
+		 var cm = parseInt(cmSize);
+		 var mm = parseInt(mmSize);
+		 var cb = parseInt(cbSize);
+		 var mmv = mmVals.split('\n');
+		 var errFree = true;
 
-
-    function checkInput(){
-        var errFree = true
-        var errorDiv = $(".error");
-
-        if (isNaN(cmSize) || cmSize <= 0) {
-			errorDiv.text('Cache Memory Size should be a positive number');
-			errorDiv.attr('style', 'color:red;');
+		 if(isNaN(cm) || cm <= 0) {
+			$(".error").text('Cache Memory Size should be a positive number');
+			$(".error").attr('style', 'color:red;');
 			errFree = false;
-
-        } else if(isNaN(cbSize) || cbSize <= 0) {
-			errorDiv.text('Block Size should be a positive number');
-			errorDiv.attr('style', 'color:red;');
+		 } else if(isNaN(mm) || mm <= 0) {
+			$(".error").text('Main Memory Size should be a positive number');
+			$(".error").attr('style', 'color:red;');
 			errFree = false;
-
-		 } else if((isNaN(mmSize) || mmSize <= 0) && progMode!='block') {
-			errorDiv.text('Main Memory Size should be a positive number');
-			errorDiv.attr('style', 'color:red;');
+		 } else if(isNaN(cb) || cb <= 0) {
+			$(".error").text('Cache Block Size should be a positive number');
+			$(".error").attr('style', 'color:red;');
 			errFree = false;
-            console.log("BLOCK " + cbSize)
-
-		 } else if(isNaN(cmTime) || cmTime <= 0) {
-			errorDiv.text('Cache Access Time should be a positive number');
-			errorDiv.attr('style', 'color:red;');
-			errFree = false;
-
-		 } else if(isNaN(mmTime) || mmTime <= 0) {
-			errorDiv.text('Memory Access Time should be a positive number');
-			errorDiv.attr('style', 'color:red;');
-			errFree = false;
-
-		 } 
+		 } else if(cm > 0 && mm > 0 && cb > 0) {
+			mmv.forEach((i) => {
+				if(!isNaN(i) && (i < 0 || i >= mm)) {
+					$(".error").text('Main Memory Values should be from range 0 to ' + (mm - 1));
+					$(".error").attr('style', 'color:red;');
+					errFree = false;
+				}
+			});
 			 
-			if(errFree && checkCompatibility())
+			console.log("values are positive numbers");
+			if(errFree && checkCompatibility(cm, mm, cb, mmv)) {
+				cacheMemory = cm;
+				mainMemory = mm;
+				cacheBlock = cb;
+				mainMemValues = mmv;
 				return true;
+			}
 			else return false;
-		 
-    }
-
-        
-
+		 }
+	}
+	
+	function clearInputs() {
+		$('#CacheMemory').val('');
+		$('#MainMemory').val('');
+		$('#CacheBlock').val('');
+		$('#MMVals').val('');
+		
+		HIT = 0;
+		MISS = 0;
+		MISS_PENALTY = 0;
+		AMAT = 0;
+		TMAT = 0;
+	}
+	
+    // Get inputs
     $('#btn-start').on('click', function() {
-        console.log("start")
-        $("#CacheMiss").val("")
-        $("#CacheHit").val("")
-        $("#Ave-AT").val("");
-        $("#Tot-AT").val("");        
-        $("#MissPenalty").val("")
-
-        $("#cacheBlock").empty()
-
-        cmSize= parseInt($('#CacheMemory').val());
-        cmMode= $('#Cache-Mode').val();
-
-        cbSize= parseInt($('#BlockSize').val());
-
-        mmSize= parseInt($('#MM-Size').val());
-        mmMode = $('#Mem-Mode').val();
-
-        progSeq = $('#ProgSeq').val().split(',');
-        progMode = $('#ProgMode').val();
-
-
-        mmTime = parseInt($('#MemTime').val());
-        cmTime= parseInt($('#CacheTime').val());
-        
-        
-		//console.log("BLOCK " + cbSize)
+        const cacheMemory = $('#CacheMemory').val();
+        const mainMemory = $('#MainMemory').val();
+        const cacheBlock = $('#CacheBlock').val();
+        const progMode = $('#ProgMode').val();
+        const mmVals = $('#MMVals').val();
+		
+		var errFree = false;
 
 		
-        // Null error
-        var errorDiv = $(".error");
-		
-            if (isNaN(cmSize)) {
-				errorDiv.text('Please enter Cache Memory Size');
-				errorDiv.attr('style', 'color:red;');
-
-            } else if (isNaN(cbSize)) {
-                errorDiv.text('Please enter Block Size');
-				errorDiv.attr('style', 'color:red;');
-
-            } else if (isNaN(mmSize) && progMode != 'block') {
-                errorDiv.text('Please enter Main Memory Size');
-				errorDiv.attr('style', 'color:red;');
-
-            } else if (isNaN(cmTime)) {
-                errorDiv.text('Please enter Cache Access Time');
-				errorDiv.attr('style', 'color:red;');
-
-            } else if (isNaN(mmTime)) {
-                errorDiv.text('Please enter Memory Access Time');
-				errorDiv.attr('style', 'color:red;');
-
-            } else if (cmSize !== '' && cbSize !== '' && mmSize !== '' && progSeq !== '' && cmTime !== '' && mmTime !== '') {
-				errorDiv.text('');
-				if(checkInput()) {
-					directMapping();
+            if (cacheMemory === '') {
+				 $(".error").text('Please enter Cache Memory Size');
+				 $(".error").attr('style', 'color:red;');
+            } else if (mainMemory === '') {
+                 $(".error").text('Please enter Main Memory Size');
+				 $(".error").attr('style', 'color:red;');
+            } else if (cacheBlock === '') {
+                 $(".error").text('Please enter Cache Block Size');
+				 $(".error").attr('style', 'color:red;');
+            } else if (mmVals === '') {
+                 $(".error").text('Please enter Main Memory Values');
+				 $(".error").attr('style', 'color:red;');
+            } else if (cacheMemory !== '' && mainMemory !== '' && cacheBlock !== '' && mmVals !== '') {
+				 $(".error").text('');
+				 console.log("no empty space");
+				if(isValidValues(cacheMemory, mainMemory, cacheBlock, mmVals)) {
+					clearInputs();
+					$('#table-display').empty();
+					if(progMode === "block")
+						blockDM();
+					else
+						wordDM();
 				}
 			}
-            //directMapping();
     });
+	
+	$('#btn-clear').click(() => {
+		clearInputs();
+	});
+	
+	$('#MMVals').text('');
 
-    
-    $('#btn-clear').on('click', function() {
-        $('#CacheMemory').val("");
-        $('#BlockSize').val("");
-        $('#MM-Size').val("");
-        $('#ProgSeq').val("");
-        $('#CacheTime').val("");
-        $('#MemTime').val("");
-    });
-    
-})
+});

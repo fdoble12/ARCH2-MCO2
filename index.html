@@ -16,7 +16,7 @@
 	<body>
 		<div id="header">
 			<h1> Direct Mapping Cache Simulator </h1>
-			<h3> PG2 </h3>
+			<h3> CSARCH2 PG2 </h3>
 			<p> This Direct Mapping Cache Simulator Program simulates how data is 
 				stored and retrieved in a computer's cache memory using the direct 
 				mapping technique.</p>
@@ -24,102 +24,67 @@
 
 
 		<div id="display-block">
-			
+
 			<!-- Left -->
 			<div id="input-block">
-				<div class="error"></div>
-				
-				<div id="input-cont">
-					<br>
-					<!-- CACHE MEMORY -->
+
+				<div id="Memory" class="flex">
 					<span>
 						<p>Cache Memory Size</p>
 						<input id="CacheMemory" type="text"/>
-						<select id="Cache-Mode">
-							<option value="block" selected>Block</option>
-							<option value="word" >Word</option>
-						</select>
 					</span>
-
-					<br>
-					<!-- SIZES -->
-					<span>
-						<p>Block Size</p>
-						<input id="BlockSize" type="text" placeholder="Input Block Size (Words)"/>
-					</span>
-					<br>
 					
 					<span>
 						<p>Main Memory Size</p>
-						<input id="MM-Size" type="text"/>
-						<select id="Mem-Mode">
-							<option value="block" selected>Block</option>
-							<option value="word" >Word</option>
-						</select>
-					</span>				
-					<br>
-
-			
-					
-					<!-- SEQUENCE & TIME -->
+						<input id="MainMemory" type="text"/>
+					</span>
+				</div>
+				
+				
+				<div id="Block" class="flex">
 					<span>
-						<p>Program Sequence (Input Decimal for Block Mode and Binary for Word Mode)</p>
-						<input id="ProgSeq" type="text"/>
+						<p>Cache Block Size</p>
+						<input id="CacheBlock" type="text"/>
+					</span>
+					
+					<span>
+						<p>Program Mode</p>
 						<select id="ProgMode">
 							<option value="block" selected>Block</option>
 							<option value="word" >Word</option>
 						</select>
 					</span>
-					<br>
-					<span>
-						<p>Cache Access Time</p>
-						<input id="CacheTime" type="text" placeholder="Nanoseconds"/>
-					</span>
-					<br>
-					<span>
-						<p>Memory Access Time</p>
-						<input id="MemTime" type="text" placeholder="Nanoseconds"/>
-					</span>
+				</div>
+
+				<div id="Values">
+					<p> Main Memory Values </p>
+					<textarea id = "MMVals" type="text">
+					</textarea>
+				</div>
 				
 				
-		
-					<div id="buttons">
-						<button id="btn-start" type="button">Start</button>
-						<button id="btn-clear">Clear</button>
-
-					</div>
-
-				</div>	
-			
+				<br>
+				<div id="buttons">
+					<button id="btn-start" type="button">Start</button>
+					<button id="btn-clear">Clear</button>
+				</div>
+				
+				
+				<div class="error"></div>
 			</div>
 
-			<!-- Right 1,7,5,0,2,1,5,6,5,2,2,0-->
+			<!-- Right -->
 			<div id="output-block">
-				
+				<div id="table-display">
 					<!-- For the Cache Snapshot-->
+				</div>
 
-					<div id="output-cont"> 
-
-						<div id="result-block">
-							<div id="CacheMiss"> </div>
-							<div id="CacheHit"> </div>
-							<div id="MissPenalty"> </div>
-							<div id="Ave-AT"> </div>
-							<div id="Tot-AT"> </div>
-
-							<list id="cacheBlock"></list>
-							
-
-
-						</div>
-
-						<div id="buttons">
-							<button id="btn-dl">Download Result</button>
-						</div>
-
-					</div>
-
+				<div id="results-display">
+					<!-- For the Results Output -->
+				</div>
 			</div>
+
+		</div>
 		
 	</body>
 </html>
