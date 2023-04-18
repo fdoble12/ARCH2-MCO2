@@ -16,8 +16,14 @@ $(document).ready(()=>{
     var mmTime
     var cmTime
 
-    function directMapping(){
+    function directMapping(){ 
         if(progMode == 'block'){
+            let numBlocks
+            if(cmMode == 'block')
+                numBlocks = cmSize
+            else if(cmMode == 'word')
+                numBlocks = cmSize/256
+
             let cacheBlock  = {};
             let miss = 0
             let hit = 0
@@ -26,13 +32,13 @@ $(document).ready(()=>{
             let hitRate = 0
             let missRate = 0 
             
-            for(i = 0; i< cmSize; i++){
+            for(i = 0; i< numBlocks; i++){
                 cacheBlock[i] = []
             }
 
             progSeq.forEach((curr) => {
                 let val = parseInt(curr)
-                let destBlock = val % cmSize
+                let destBlock = val % numBlocks
 
                 if(cacheBlock[destBlock].pop() == val){
                     hit++
@@ -52,7 +58,7 @@ $(document).ready(()=>{
 
             
             let cbRec ="\nBlock : Data \n"
-            for(i = 0; i < cmSize; i++){
+            for(i = 0; i < numBlocks; i++){
                 $('#cacheBlock').append("<div>"+"Block "+i+": "+cacheBlock[i.toString()]+"</div>")
                 cbRec+=i+": \t"+cacheBlock[i.toString()]+'\n'
             }
@@ -71,8 +77,9 @@ $(document).ready(()=>{
 
             let aveAccTime = (hitRate * cmTime) + (missRate * missPenalty)
 
-            let totalAccessTime = (hit * 2 * cmTime) + (miss * 2 *(mmTime+1)) + (miss * cmTime)
-
+            let missTime = (miss * (cbSize * (mmTime * 1 + cmTime * 1))) + miss * cmTime;
+            console.log("Miss Time: "+missTime)
+            let totalAccessTime = (hit * cmTime * cbSize) + missTime;
             /** DISPLAY */
 
             var aveAT = $("#Ave-AT");
@@ -104,10 +111,25 @@ $(document).ready(()=>{
             });
 
         }else{
-            if(cmMode == 'block' && mmMode == 'word'){
-                let mmBits = getBits(mmSize) // MM memory to bits
+            
+                let mmSizeForBits
+                console.log('MMSIZE ' +mmSize)
+                if(mmMode == 'block')
+                    mmSizeForBits = mmSize * 256
+                else{
+                    mmSizeForBits = mmSize
+                }
+                console.log('MMSIZE FOR BITS '+ mmSizeForBits)
+                let numBlocks
+                if(cmMode == 'block')
+                    numBlocks = cmSize
+                else if(cmMode == 'word')
+                    numBlocks = cmSize/256
+
+                let mmBits = getBits(mmSizeForBits) // MM memory to bits
+                console.log('MMbits '+ mmBits)
                 let w= getBits(cbSize) //block size to bits
-                let b = getBits(cmSize) //cache mem to bits
+                let b = getBits(numBlocks) //cache mem to bits
                 let tag = mmBits - w - b
                 let hit = 0
                 let miss = 0
@@ -116,7 +138,7 @@ $(document).ready(()=>{
                 let hitRate = 0
                 let missRate = 0
                 let cacheBlock = {};
-                for(i = 0; i< cmSize; i++){
+                for(i = 0; i< numBlocks; i++){
                     cacheBlock[i] = []
                 }
                 console.log(progSeq)
@@ -134,7 +156,7 @@ $(document).ready(()=>{
                         let blockNumInt = parseInt(blockNum, 2)
                         console.log(blockNumInt)
 
-                        let destBlock = blockNumInt % cmSize
+                        let destBlock = blockNumInt % numBlocks
                         if(cacheBlock[destBlock].pop() == decVal)
                         {
                             hit++
@@ -151,8 +173,9 @@ $(document).ready(()=>{
                 missPenalty = (cmTime*2) + (mmTime * cbSize)
 
                 let aveAccTime = (hitRate * cmTime) + (missRate * missPenalty)
-
-                let totalAccessTime = (hit * 2 * cmTime) + (miss * 2 *(mmTime+1)) + (miss * cmTime)
+                let missTime = (miss * (cbSize * (mmTime * 1 + cmTime * 1))) + miss * cmTime;
+                console.log("Miss Time: "+missTime)
+                let totalAccessTime = (hit * cmTime * cbSize) + missTime;
                 var aveAT = $("#Ave-AT");
                 var totAT = $("#Tot-AT");        
                 var mP = $("#MissPenalty")
@@ -163,7 +186,7 @@ $(document).ready(()=>{
                 console.log("total Acc: "+ totalAccessTime)
                     totAT.text("Total Memory Access Time:  "+ totalAccessTime)
                     let cbRec ="\nBlock : Data \n"
-                    for(i = 0; i < cmSize; i++){
+                    for(i = 0; i < numBlocks; i++){
                     $('#cacheBlock').append("<div>"+"Block "+i+": "+cacheBlock[i.toString()]+"</div>")
                     cbRec+=i+": \t"+cacheBlock[i.toString()]+'\n'
                 }   
@@ -181,7 +204,7 @@ $(document).ready(()=>{
                     URL.revokeObjectURL(href);
                 });
     
-            }
+            
         }
 
     }
@@ -206,7 +229,6 @@ $(document).ready(()=>{
         var errorDiv = $(".error");
 
 		if(mmMode == 'block' && mmSize != 0) {
-                mmSize = 0;
                 mmMode = null;
                 errorDiv.text('Main Memory Size is not required for Block Mode');
 				errorDiv.attr('style', 'color:red;');
@@ -238,7 +260,7 @@ $(document).ready(()=>{
 			errorDiv.attr('style', 'color:red;');
 			errFree = false;
 
-		 } else if(isNaN(mmSize) || mmSize <= 0 && progMode!='block') {
+		 } else if((isNaN(mmSize) || mmSize <= 0) && progMode!='block') {
 			errorDiv.text('Main Memory Size should be a positive number');
 			errorDiv.attr('style', 'color:red;');
 			errFree = false;
@@ -254,22 +276,26 @@ $(document).ready(()=>{
 			errorDiv.attr('style', 'color:red;');
 			errFree = false;
 
-		 } else if(cmSize > 0 && mmSize > 0 && cbSize > 0 && cmTime > 0 && mmTime > 0) {
-			progSeq.forEach((i) => {
-				if(!isNaN(i) && i < 0) {
-					errorDiv.text('Program Sequence Values should be a positive number');
-					errorDiv.attr('style', 'color:red;');
-					errFree = false;
-				}
-			});
+		 } 
 			 
 			if(errFree && checkCompatibility())
 				return true;
 			else return false;
-		 }
+		 
     }
 
+        
+
     $('#btn-start').on('click', function() {
+        console.log("start")
+        $("#CacheMiss").val("")
+        $("#CacheHit").val("")
+        $("#Ave-AT").val("");
+        $("#Tot-AT").val("");        
+        $("#MissPenalty").val("")
+
+        $("#cacheBlock").empty()
+
         cmSize= parseInt($('#CacheMemory').val());
         cmMode= $('#Cache-Mode').val();
 
@@ -329,7 +355,6 @@ $(document).ready(()=>{
         $('#ProgSeq').val("");
         $('#CacheTime').val("");
         $('#MemTime').val("");
-        
     });
     
 })
